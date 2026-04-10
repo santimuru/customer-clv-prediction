@@ -630,9 +630,9 @@ elif page == "🔮 Simulator":
                     "axis": {"range": [0, 100]},
                     "bar": {"color": seg_color},
                     "steps": [
-                        {"range": [0, 30], "color": "#FC818133"},
-                        {"range": [30, 70], "color": "#F6AD5533"},
-                        {"range": [70, 100], "color": "#48BB7833"},
+                        {"range": [0, 30], "color": "rgba(252, 129, 129, 0.2)"},
+                        {"range": [30, 70], "color": "rgba(246, 173, 85, 0.2)"},
+                        {"range": [70, 100], "color": "rgba(72, 187, 120, 0.2)"},
                     ],
                     "threshold": {"line": {"color": "white", "width": 2}, "value": 50},
                 },
