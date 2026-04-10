@@ -453,7 +453,7 @@ elif page == "🔮 Simulator":
             f_score = min(5, max(1, int(np.digitize(frequency, [1, 3, 7, 15, 30]))))
             m_score = min(5, max(1, int(np.digitize(monetary, [10, 30, 75, 150, 300]))))
 
-                def _seg(row):
+            def _seg(row):
                 r, f, m = row["r_score"], row["f_score"], row["m_score"]
                 if r >= 4 and f >= 4:
                     return "Champions"
