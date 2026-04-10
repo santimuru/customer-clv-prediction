@@ -1,7 +1,7 @@
 # Customer Lifetime Value Prediction
 
 > Predicting how much each customer is worth — and what to do about it.
-> **Live demo:** [customer-clv-santiago.streamlit.app](https://customer-clv-santiago.streamlit.app)
+> **Live demo:** [customer-clv-prediction-santiagomuru.streamlit.app](https://customer-clv-prediction-santiagomuru.streamlit.app/)
 
 ---
 
