@@ -558,10 +558,13 @@ elif page == "🔮 Simulator":
     with col_out:
         if submitted:
             # BG/NBD predictions
-            p_alive = float(bgf.conditional_probability_alive(frequency, recency, T))
-            exp_purch = float(bgf.conditional_expected_number_of_purchases_up_to_time(
-                horizon * 30, frequency, recency, T
-            ))
+            p_alive = bgf.conditional_probability_alive(float(frequency), float(recency), float(T))
+            p_alive = float(np.asarray(p_alive).reshape(-1)[0])
+
+            exp_purch = bgf.conditional_expected_number_of_purchases_up_to_time(
+                horizon * 30, float(frequency), float(recency), float(T)
+            )
+            exp_purch = float(np.asarray(exp_purch).reshape(-1)[0])
 
             # Gamma-Gamma CLV
             clv = float(gg.customer_lifetime_value(
