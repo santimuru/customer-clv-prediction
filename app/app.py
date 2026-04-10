@@ -576,9 +576,14 @@ elif page == "🔮 Simulator":
             ).iloc[0])
 
             # Segment assignment
-            r_score = int(pd.cut([recency], bins=5, labels=[5, 4, 3, 2, 1])[0])
-            f_score = min(5, max(1, int(np.digitize(frequency, [1, 3, 7, 15, 30]))))
-            m_score = min(5, max(1, int(np.digitize(monetary, [10, 30, 75, 150, 300]))))
+            rfm_ref = meta["rfm"]
+            recency_edges = rfm_ref["recency"].quantile([0.2, 0.4, 0.6, 0.8]).to_numpy()
+            frequency_edges = rfm_ref["frequency"].quantile([0.2, 0.4, 0.6, 0.8]).to_numpy()
+            monetary_edges = rfm_ref["monetary_value"].quantile([0.2, 0.4, 0.6, 0.8]).to_numpy()
+
+            r_score = int(5 - np.digitize(recency, recency_edges))
+            f_score = int(1 + np.digitize(frequency, frequency_edges))
+            m_score = int(1 + np.digitize(monetary, monetary_edges))
 
             def _seg(row):
                 r, f, m = row["r_score"], row["f_score"], row["m_score"]
