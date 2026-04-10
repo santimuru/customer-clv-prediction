@@ -566,17 +566,27 @@ elif page == "🔮 Simulator":
             )
             exp_purch = float(np.asarray(exp_purch).reshape(-1)[0])
 
-            # Gamma-Gamma CLV
-            clv = float(gg.customer_lifetime_value(
-                bgf,
-                pd.Series([frequency]),
-                pd.Series([recency]),
-                pd.Series([T]),
-                pd.Series([monetary]),
-                time=horizon,
-                freq="D",
-                discount_rate=0.01,
-            ).iloc[0])
+            # Gamma-Gamma expected order value + discounted expected transactions (avoid lifetimes version differences)
+            avg_profit = gg.conditional_expected_average_profit(
+                pd.Series([float(frequency)]),
+                pd.Series([float(monetary)]),
+            )
+            avg_profit = float(np.asarray(avg_profit).reshape(-1)[0])
+
+            discount_rate = 0.01
+            expected_cum = []
+            for m in range(1, int(horizon) + 1):
+                cum = bgf.conditional_expected_number_of_purchases_up_to_time(
+                    m * 30, float(frequency), float(recency), float(T)
+                )
+                expected_cum.append(float(np.asarray(cum).reshape(-1)[0]))
+            expected_by_month = np.diff([0.0] + expected_cum)
+            clv = float(
+                np.sum(
+                    (expected_by_month * avg_profit)
+                    / np.power(1.0 + discount_rate, np.arange(1, len(expected_by_month) + 1))
+                )
+            )
 
             # Segment assignment
             rfm_ref = meta["rfm"]
