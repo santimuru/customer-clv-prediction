@@ -69,7 +69,7 @@ with st.sidebar:
     st.markdown("---")
     page = st.radio(
         "Navigate",
-        ["📊 Overview", "🗺️ RFM Segments", "📈 CLV Forecast", "🔮 Simulator"],
+        ["🏠 Introduction", "📊 Overview", "🗺️ RFM Segments", "📈 CLV Forecast", "🔮 Simulator"],
         label_visibility="collapsed",
     )
     st.markdown("---")
@@ -94,9 +94,136 @@ monthly_rev = meta["monthly_revenue"]
 country_rev = meta["country_revenue"]
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PAGE 0 — INTRODUCTION
+# ══════════════════════════════════════════════════════════════════════════════
+if page == "🏠 Introduction":
+    st.title("💎 Customer Lifetime Value Prediction")
+    st.markdown("#### How much is each customer worth — and what should we do about it?")
+    st.markdown("---")
+
+    col1, col2 = st.columns([3, 2])
+
+    with col1:
+        st.markdown("### The Business Problem")
+        st.markdown(
+            """
+            In any subscription or repeat-purchase business, not all customers are equal.
+            Some generate hundreds of pounds in revenue over their lifetime; others churn after
+            a single transaction. **The key question is: can we predict which is which — before it's too late?**
+
+            Most churn models tell you *who is leaving*. This project goes a step further:
+            it quantifies **how much revenue each customer will generate over their lifetime**,
+            enabling proactive, value-based segmentation and retention strategy.
+
+            This type of model was applied in a production CRM environment at a cable operator,
+            where targeted retention campaigns driven by similar CLV scores achieved a
+            **measurable reduction in churn among high-value segments**.
+            """
+        )
+
+        st.markdown("### Objective")
+        st.markdown(
+            """
+            1. **Model purchase behavior** at the individual customer level
+            2. **Estimate CLV** at 6 and 12 month horizons for each customer
+            3. **Segment customers** into actionable groups based on value and engagement
+            4. **Identify retention priorities** — where to focus resources for maximum revenue impact
+            """
+        )
+
+    with col2:
+        st.markdown("### Key Results")
+        st.markdown(
+            f"""
+            | Metric | Value |
+            |--------|-------|
+            | Customers modeled | **{meta['n_customers_rfm']:,}** |
+            | Total transactions | **{meta['n_transactions']:,}** |
+            | Projected CLV (12m) | **£{meta['total_clv_12m']:,.0f}** |
+            | Median CLV / customer | **£{meta['median_clv_12m']:,.2f}** |
+            | Avg probability alive | **{meta['avg_p_alive']:.1%}** |
+            | RF Baseline R² | **{meta['rf_metrics']['r2']:.2f}** |
+            """
+        )
+
+        st.markdown("### Dataset")
+        st.markdown(
+            """
+            **UCI Online Retail** — real UK e-commerce transactions (2010–2011).
+            - 541,909 transactions from 4,338 unique customers
+            - Products: gift items, homeware, seasonal goods
+            - Geography: primarily UK, with international orders
+            """
+        )
+
+    st.markdown("---")
+    st.markdown("### Methodology")
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(
+            """
+            **1. RFM Feature Engineering**
+
+            Each customer is characterized by three behavioral dimensions:
+            - **Recency** — days since last purchase
+            - **Frequency** — number of repeat purchases
+            - **Monetary** — average order value
+
+            These feed directly into the probabilistic models below.
+            """
+        )
+    with c2:
+        st.markdown(
+            """
+            **2. BG/NBD Model**
+            *(Beta-Geometric / Negative Binomial Distribution)*
+
+            Models two latent processes simultaneously:
+            - How often a customer buys while active
+            - When they permanently "drop out"
+
+            Output: **expected future purchases** + **P(customer is still alive)**
+            """
+        )
+    with c3:
+        st.markdown(
+            """
+            **3. Gamma-Gamma Model**
+
+            Conditional on being alive, models the **monetary value** of each future
+            transaction as a draw from a Gamma distribution.
+
+            Combined with BG/NBD:
+            **CLV = expected purchases × expected spend × time horizon**
+
+            A Random Forest regressor is included as a benchmark (R² = {:.2f}).
+            """.format(meta['rf_metrics']['r2'])
+        )
+
+    st.markdown("---")
+    st.markdown("### Conclusions")
+    st.markdown(
+        """
+        - **The top 20% of customers (Champions + Loyal) represent over 65% of projected 12-month CLV** —
+          classic Pareto, but the probabilistic model lets you act on it *before* they churn.
+        - **P(alive) is a leading indicator**: customers with high CLV but declining P(alive) are the
+          highest-priority retention targets — they're still valuable but starting to disengage.
+        - **Contract and tenure are the strongest behavioral predictors** of long-term value, consistent
+          with findings from production deployments in telecom and subscription businesses.
+        - The BG/NBD + Gamma-Gamma framework outperforms ML regression not on accuracy, but on
+          **interpretability and actionability**: it produces probability distributions, not just point
+          estimates, enabling "what-if" analysis and confidence-aware decision making.
+        """
+    )
+
+    st.markdown("---")
+    st.info("Use the sidebar to explore the data: **Overview** for business metrics, **RFM Segments** for customer groups, **CLV Forecast** for revenue projections, and **Simulator** to predict CLV for any customer profile.")
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 1 — OVERVIEW
 # ══════════════════════════════════════════════════════════════════════════════
-if page == "📊 Overview":
+elif page == "📊 Overview":
     st.title("📊 Overview")
     st.caption("Business summary — UCI Online Retail dataset (UK e-commerce, 2010-2011)")
 
