@@ -7,7 +7,7 @@
 
 ## Overview
 
-Most churn models tell you *who* is leaving. This project goes further: it quantifies **how much each customer is worth over their lifetime**, segments them by behavior, and recommends retention actions accordingly.
+Most churn models tell you _who_ is leaving. This project goes further: it quantifies **how much each customer is worth over their lifetime**, segments them by behavior, and recommends retention actions accordingly.
 
 Built on the **BG/NBD + Gamma-Gamma** probabilistic framework — the same models used by Amazon, LVMH, and subscription businesses worldwide to drive CRM strategy.
 
@@ -17,12 +17,12 @@ Applied a similar approach in a production CRM environment at a cable operator, 
 
 ## Live Dashboard
 
-| Section | What you'll find |
-|---|---|
-| 📊 Overview | Revenue trends, cohort retention heatmap, top markets |
-| 🗺️ RFM Segments | 8-tier customer segmentation, treemap of CLV potential |
-| 📈 CLV Forecast | 6m/12m projections, P(alive) analysis, ML baseline comparison |
-| 🔮 Simulator | Enter any customer's history → CLV + segment + recommended action |
+| Section         | What you'll find                                                  |
+| --------------- | ----------------------------------------------------------------- |
+| 📊 Overview     | Revenue trends, cohort retention heatmap, top markets             |
+| 🗺️ RFM Segments | 8-tier customer segmentation, treemap of CLV potential            |
+| 📈 CLV Forecast | 6m/12m projections, P(alive) analysis, ML baseline comparison     |
+| 🔮 Simulator    | Enter any customer's history → CLV + segment + recommended action |
 
 ---
 
@@ -30,11 +30,11 @@ Applied a similar approach in a production CRM environment at a cable operator, 
 
 Most portfolios use scikit-learn for everything. This project uses **statistical models grounded in purchase behavior theory**:
 
-| Model | What it predicts |
-|---|---|
+| Model                                                        | What it predicts                                                      |
+| ------------------------------------------------------------ | --------------------------------------------------------------------- |
 | **BG/NBD** (Beta-Geometric / Negative Binomial Distribution) | How many times a customer will buy, and whether they're still "alive" |
-| **Gamma-Gamma** | How much they'll spend per transaction |
-| **CLV** = BG/NBD × Gamma-Gamma × time horizon | Total expected revenue from a customer |
+| **Gamma-Gamma**                                              | How much they'll spend per transaction                                |
+| **CLV** = BG/NBD × Gamma-Gamma × time horizon                | Total expected revenue from a customer                                |
 
 A Random Forest regressor is included as a benchmark, but the probabilistic approach wins on interpretability and richer output (probability distributions, not just point estimates).
 
@@ -63,14 +63,14 @@ UCI Online Retail — real UK e-commerce transactions, 2010–2011.
 
 ## Key Results
 
-| Metric | Value |
-|---|---|
+| Metric             | Value                      |
+| ------------------ | -------------------------- |
 | Customers analyzed | ~4,300 (repeat purchasers) |
-| Projected CLV 12m | ~£9.5M |
-| Avg P(alive) | ~62% |
-| RF Baseline R² | ~0.87 |
+| Projected CLV 12m  | ~£9.5M                     |
+| Avg P(alive)       | ~62%                       |
+| RF Baseline R²     | ~0.87                      |
 
-**Top insight:** The top 20% of customers (Champions + Loyal) represent over 65% of total projected CLV — classic Pareto, but the BG/NBD model lets you act on it *before* they churn.
+**Top insight:** The top 20% of customers (Champions + Loyal) represent over 65% of total projected CLV — classic Pareto, but the BG/NBD model lets you act on it _before_ they churn.
 
 ---
 
