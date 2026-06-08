@@ -15,33 +15,25 @@ Usage:
 """
 
 import os
-import sys
-import pickle
-import warnings
 import joblib
 import requests
 import pandas as pd
 import numpy as np
 from io import BytesIO
-from datetime import datetime
 
 from lifetimes import BetaGeoFitter, GammaGammaFitter
 from lifetimes.utils import summary_data_from_transaction_data
 
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
-warnings.filterwarnings("ignore")
-
 # ─── Paths ────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH     = os.path.join(BASE_DIR, "data", "online_retail.xlsx")
 DATA_PATH_CSV = os.path.join(BASE_DIR, "data", "online_retail.csv")
-MODEL_BGN  = os.path.join(BASE_DIR, "models", "bgn_model.pkl")
-MODEL_GG   = os.path.join(BASE_DIR, "models", "gg_model.pkl")
 MODEL_RF   = os.path.join(BASE_DIR, "models", "rf_model.pkl")
 META_PATH  = os.path.join(BASE_DIR, "models", "model_meta.pkl")
 
@@ -56,7 +48,6 @@ DATASET_URLS = [
 # ─── RFM Segment labels ───────────────────────────────────────────────────────
 def assign_segment(row):
     r, f, m = row["r_score"], row["f_score"], row["m_score"]
-    rfm = r + f + m
     if r >= 4 and f >= 4:
         return "Champions"
     elif r >= 3 and f >= 3:
@@ -65,10 +56,10 @@ def assign_segment(row):
         return "Recent Customers"
     elif r >= 3 and f <= 2:
         return "Promising"
-    elif r <= 2 and f >= 3:
-        return "At Risk"
     elif r <= 2 and f >= 4:
         return "Can't Lose Them"
+    elif r <= 2 and f >= 3:
+        return "At Risk"
     elif r <= 2 and f <= 2 and m <= 2:
         return "Lost"
     else:

@@ -9,26 +9,24 @@
 
 Most churn models tell you _who_ is leaving. This project goes further: it quantifies **how much each customer is worth over their lifetime**, segments them by behavior, and recommends retention actions accordingly.
 
-Built on the **BG/NBD + Gamma-Gamma** probabilistic framework — the same models used by Amazon, LVMH, and subscription businesses worldwide to drive CRM strategy.
-
-Applied a similar approach in a production CRM environment at a cable operator, integrating CLV scores into targeted retention and upsell campaigns.
+Built on the **BG/NBD + Gamma-Gamma** probabilistic framework — a principled approach grounded in purchase-behavior theory that produces probability distributions, not just point estimates.
 
 ---
 
 ## Live Dashboard
 
-| Section         | What you'll find                                                  |
-| --------------- | ----------------------------------------------------------------- |
-| 📊 Overview     | Revenue trends, cohort retention heatmap, top markets             |
-| 🗺️ RFM Segments | 8-tier customer segmentation, treemap of CLV potential            |
-| 📈 CLV Forecast | 6m/12m projections, P(alive) analysis, ML baseline comparison     |
-| 🔮 Simulator    | Enter any customer's history → CLV + segment + recommended action |
+| Section      | What you'll find                                                  |
+| ------------ | ----------------------------------------------------------------- |
+| Overview     | Revenue trends, cohort retention heatmap, top markets             |
+| RFM Segments | 8-tier customer segmentation, treemap of CLV potential            |
+| CLV Forecast | 6m/12m projections, P(alive) analysis, ML baseline comparison     |
+| Simulator    | Enter any customer's history to get CLV + segment + recommended action |
 
 ---
 
 ## Why BG/NBD + Gamma-Gamma?
 
-Most portfolios use scikit-learn for everything. This project uses **statistical models grounded in purchase behavior theory**:
+This project uses **statistical models grounded in purchase behavior theory** rather than a generic regression baseline:
 
 | Model                                                        | What it predicts                                                      |
 | ------------------------------------------------------------ | --------------------------------------------------------------------- |
@@ -63,14 +61,12 @@ UCI Online Retail — real UK e-commerce transactions, 2010–2011.
 
 ## Key Results
 
-| Metric             | Value                      |
-| ------------------ | -------------------------- |
-| Customers analyzed | ~4,300 (repeat purchasers) |
-| Projected CLV 12m  | ~£9.5M                     |
-| Avg P(alive)       | ~62%                       |
-| RF Baseline R²     | ~0.87                      |
+Computed from the trained artifact (see the Introduction page for live figures):
 
-**Top insight:** The top 20% of customers (Champions + Loyal) represent over 65% of total projected CLV — classic Pareto, but the BG/NBD model lets you act on it _before_ they churn.
+- ~4,300 repeat-purchasing customers modeled from the UCI Online Retail dataset
+- BG/NBD + Gamma-Gamma CLV projections at 6m and 12m horizons
+- RF baseline R² is near-tautological (features derive mechanically from the CLV target) — treat as a sanity check
+- P(alive) is a leading indicator: customers with high CLV but low P(alive) are the highest-priority retention targets
 
 ---
 
@@ -85,10 +81,8 @@ customer-clv-prediction/
 ├── data/
 │   └── online_retail.xlsx  # Downloaded on first run
 ├── models/
-│   ├── bgn_model.pkl       # Fitted BG/NBD model
-│   ├── gg_model.pkl        # Fitted Gamma-Gamma model
-│   ├── rf_model.pkl        # RF baseline
-│   └── model_meta.pkl      # RFM table, metrics, segment stats, cohort data
+│   ├── rf_model.pkl        # RF baseline (joblib)
+│   └── model_meta.pkl      # BG/NBD + GG params, RFM table, metrics, segment stats, cohort data
 ├── requirements.txt
 ├── .python-version         # 3.11
 └── README.md
@@ -111,8 +105,6 @@ streamlit run app/app.py
 ## About
 
 Built by [Santiago Martínez](https://santimuru.github.io) — Data Analyst with 6+ years in telecom, e-commerce, and consulting.
-
-Previously deployed CLV-adjacent retention models in a production CRM environment at a cable operator, integrating model outputs into segmented campaign workflows.
 
 ---
 

@@ -6,7 +6,6 @@ Built with Streamlit + lifetimes (BG/NBD + Gamma-Gamma)
 import os
 import warnings
 import joblib
-import requests
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -15,18 +14,10 @@ from plotly.subplots import make_subplots
 import streamlit as st
 from lifetimes import BetaGeoFitter, GammaGammaFitter
 
-warnings.filterwarnings("ignore")
-
 # ─── Paths ────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 META_PATH  = os.path.join(BASE_DIR, "models", "model_meta.pkl")
 MODEL_RF   = os.path.join(BASE_DIR, "models", "rf_model.pkl")
-DATA_PATH  = os.path.join(BASE_DIR, "data", "online_retail.xlsx")
-
-DATASET_URL = (
-    "https://raw.githubusercontent.com/databricks/Spark-The-Definitive-Guide"
-    "/master/data/retail-data/all/online-retail-dataset.csv"
-)
 
 SEGMENT_COLORS = {
     "Champions":        "#6C63FF",
@@ -57,19 +48,18 @@ def load_meta():
 # ─── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Customer CLV Dashboard",
-    page_icon="💎",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 💎 CLV Dashboard")
+    st.markdown("## CLV Dashboard")
     st.markdown("*Customer Lifetime Value*")
     st.markdown("---")
     page = st.radio(
         "Navigate",
-        ["🏠 Introduction", "📊 Overview", "🗺️ RFM Segments", "📈 CLV Forecast", "🔮 Simulator"],
+        ["Introduction", "Overview", "RFM Segments", "CLV Forecast", "Simulator"],
         label_visibility="collapsed",
     )
     st.markdown("---")
@@ -96,9 +86,9 @@ country_rev = meta["country_revenue"]
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 0 — INTRODUCTION
 # ══════════════════════════════════════════════════════════════════════════════
-if page == "🏠 Introduction":
-    st.title("💎 Customer Lifetime Value Prediction")
-    st.markdown("#### How much is each customer worth — and what should we do about it?")
+if page == "Introduction":
+    st.title("Customer Lifetime Value Prediction")
+    st.markdown("#### How much is each customer worth, and what should we do about it?")
     st.markdown("---")
 
     col1, col2 = st.columns([3, 2])
@@ -109,15 +99,11 @@ if page == "🏠 Introduction":
             """
             In any subscription or repeat-purchase business, not all customers are equal.
             Some generate hundreds of pounds in revenue over their lifetime; others churn after
-            a single transaction. **The key question is: can we predict which is which — before it's too late?**
+            a single transaction. The key question: can we predict which is which before it is too late?
 
             Most churn models tell you *who is leaving*. This project goes a step further:
             it quantifies **how much revenue each customer will generate over their lifetime**,
             enabling proactive, value-based segmentation and retention strategy.
-
-            This type of model was applied in a production CRM environment at a cable operator,
-            where targeted retention campaigns driven by similar CLV scores achieved a
-            **measurable reduction in churn among high-value segments**.
             """
         )
 
@@ -198,21 +184,27 @@ if page == "🏠 Introduction":
             **CLV = expected purchases × expected spend × time horizon**
 
             A Random Forest regressor is included as a benchmark (R² = {:.2f}).
+            Note: the R² is high because the RF features (RFM scores) mechanically
+            derive from the same transaction data used to build the CLV target —
+            treat it as a sanity check, not an independent validation.
             """.format(meta['rf_metrics']['r2'])
         )
 
     st.markdown("---")
-    st.markdown("### Conclusions")
+    st.markdown("### Key Findings")
+    # Compute top-20% CLV share from loaded data
+    _rfm_intro = meta["rfm"].copy()
+    _clv_sorted = _rfm_intro["clv_12m"].sort_values(ascending=False)
+    _top20_n = max(1, int(len(_clv_sorted) * 0.20))
+    _top20_share = _clv_sorted.iloc[:_top20_n].sum() / _clv_sorted.sum()
+    _high_value_at_risk = int(((_rfm_intro["clv_12m"] > _rfm_intro["clv_12m"].median()) & (_rfm_intro["p_alive"] < 0.5)).sum())
     st.markdown(
-        """
-        - **The top 20% of customers (Champions + Loyal) represent over 65% of projected 12-month CLV** —
-          classic Pareto, but the probabilistic model lets you act on it *before* they churn.
-        - **P(alive) is a leading indicator**: customers with high CLV but declining P(alive) are the
-          highest-priority retention targets — they're still valuable but starting to disengage.
-        - **Contract and tenure are the strongest behavioral predictors** of long-term value, consistent
-          with findings from production deployments in telecom and subscription businesses.
-        - The BG/NBD + Gamma-Gamma framework outperforms ML regression not on accuracy, but on
-          **interpretability and actionability**: it produces probability distributions, not just point
+        f"""
+        - The top 20% of customers account for **{_top20_share:.0%} of projected 12-month CLV** —
+          the probabilistic model lets you act on this concentration before those customers churn.
+        - **{_high_value_at_risk:,} customers** sit above the median CLV but below 50% P(alive):
+          high-value but disengaging, and the highest-priority retention targets.
+        - The BG/NBD + Gamma-Gamma framework produces **probability distributions**, not just point
           estimates, enabling "what-if" analysis and confidence-aware decision making.
         """
     )
@@ -223,8 +215,8 @@ if page == "🏠 Introduction":
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 1 — OVERVIEW
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "📊 Overview":
-    st.title("📊 Overview")
+elif page == "Overview":
+    st.title("Overview")
     st.caption("Business summary — UCI Online Retail dataset (UK e-commerce, 2010-2011)")
 
     # KPIs
@@ -305,8 +297,8 @@ elif page == "📊 Overview":
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 2 — RFM SEGMENTS
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "🗺️ RFM Segments":
-    st.title("🗺️ RFM Segmentation")
+elif page == "RFM Segments":
+    st.title("RFM Segmentation")
     st.caption("Customers grouped by Recency · Frequency · Monetary value using the BG/NBD model output")
 
     # Segment cards
@@ -409,8 +401,8 @@ elif page == "🗺️ RFM Segments":
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 3 — CLV FORECAST
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "📈 CLV Forecast":
-    st.title("📈 CLV Forecast")
+elif page == "CLV Forecast":
+    st.title("CLV Forecast")
     st.caption("Projected Customer Lifetime Value using BG/NBD + Gamma-Gamma probabilistic models")
 
     c1, c2, c3 = st.columns(3)
@@ -515,17 +507,22 @@ elif page == "📈 CLV Forecast":
             | MAE | £{meta['rf_metrics']['mae']:,.2f} |
             | R² | {meta['rf_metrics']['r2']:.4f} |
 
+            **Caveat:** the R² is near-tautological — the RF features (frequency, recency, T,
+            monetary value, RFM scores) are all derived from the same transaction data used to
+            construct the CLV target. The high score reflects mechanical correlation, not
+            independent predictive power. Use this as a sanity check only.
+
             The BG/NBD + Gamma-Gamma approach is preferred because it is **interpretable**,
             grounded in purchase behavior theory, and produces **probability distributions**
-            rather than point estimates — enabling richer segmentation and "what-if" analysis.
+            rather than point estimates, enabling richer segmentation and "what-if" analysis.
             """
         )
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 4 — SIMULATOR
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "🔮 Simulator":
-    st.title("🔮 Customer CLV Simulator")
+elif page == "Simulator":
+    st.title("Customer CLV Simulator")
     st.caption("Predict CLV and segment for any customer given their purchase history")
 
     col_form, col_out = st.columns([1, 1])
@@ -608,10 +605,10 @@ elif page == "🔮 Simulator":
                     return "Recent Customers"
                 elif r >= 3 and f <= 2:
                     return "Promising"
-                elif r <= 2 and f >= 3:
-                    return "At Risk"
                 elif r <= 2 and f >= 4:
                     return "Can't Lose Them"
+                elif r <= 2 and f >= 3:
+                    return "At Risk"
                 elif r <= 2 and f <= 2 and m <= 2:
                     return "Lost"
                 else:
@@ -680,7 +677,6 @@ elif page == "🔮 Simulator":
                 """
                 <div style="display:flex;align-items:center;justify-content:center;
                             height:300px;opacity:0.4;flex-direction:column">
-                    <span style="font-size:3rem">🔮</span>
                     <p>Fill in the form and click <b>Predict CLV</b></p>
                 </div>
                 """,
