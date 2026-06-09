@@ -1,9 +1,9 @@
 """
 app.py  Customer Lifetime Value
 
-Design system: Financial Ledger / Broadsheet.
-Soft salmon paper, warm ink, deep ledger green + brass accent, Fraunces display
-serif over Spectral body serif, tabular figures, hairline rules, zero rounding.
+Design system: Modern BI dashboard.
+Cool light ground, white rounded cards with soft shadows, bold colour-coded
+numerals (green money / blue accent), Manrope display over Inter body, pill nav.
 BG/NBD + Gamma-Gamma probabilistic CLV on the UCI Online Retail dataset.
 """
 
@@ -25,47 +25,48 @@ META_PATH = os.path.join(BASE_DIR, "models", "model_meta.pkl")
 MODEL_RF  = os.path.join(BASE_DIR, "models", "rf_model.pkl")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Design tokens · financial ledger
+# Design tokens · modern BI dashboard
 # ─────────────────────────────────────────────────────────────────────────────
-PAPER  = "#FBEFE4"   # soft salmon broadsheet ground
-PAPER2 = "#F3E3D5"   # deeper panel ground
-INK    = "#2A211B"   # warm dark brown-black
-INK60  = "#7A6E62"   # muted ink
-LINE   = "#E2D0BD"   # hairline on salmon
-GREEN  = "#1C5440"   # deep ledger green · structural / positive / money
-GREEN2 = "#2F7355"
-BRASS  = "#A8792C"   # gold accent
-CRIMSON = "#9E2B25"  # loss / negative, used sparingly
+PAPER  = "#EEF1F6"   # cool light dashboard ground
+PAPER2 = "#FFFFFF"   # white card
+INK    = "#161A20"   # near-black
+INK60  = "#5C6672"   # muted slate
+LINE   = "#E2E7EE"   # hairline
+GREEN  = "#1E9E63"   # money / positive
+GREEN2 = "#15B179"
+BRASS  = "#2F6BE0"   # BI blue · primary accent (name kept for section markup)
+CRIMSON = "#E0483D"  # loss / negative
+AMBER  = "#E0A11E"   # caution
 
-# Segments graded within the brand (value + health), no rainbow
+# Segments graded by value + health: green (best) -> blue -> amber -> red -> grey
 SEGMENT_COLORS = {
-    "Champions":        "#1C5440",
-    "Loyal Customers":  "#2F7355",
-    "Recent Customers": "#5C9A6F",
-    "Promising":        "#93B58C",
-    "Need Attention":   "#B89043",
-    "At Risk":          "#C46A3A",
-    "Can't Lose Them":  "#9E2B25",
-    "Lost":             "#8C8073",
+    "Champions":        "#16915C",
+    "Loyal Customers":  "#3FB07E",
+    "Recent Customers": "#2F6BE0",
+    "Promising":        "#6FA0EF",
+    "Need Attention":   "#E0A11E",
+    "At Risk":          "#E0742E",
+    "Can't Lose Them":  "#E0483D",
+    "Lost":             "#8A93A0",
 }
-# Brand sequential scales (replace Purples)
-GREEN_SCALE = [[0.0, "#F1E2D2"], [0.5, "#7BA98C"], [1.0, GREEN]]
-BRASS_GREEN = [[0.0, "#E6C98A"], [0.5, "#8FB07C"], [1.0, GREEN]]
+# Sequential scales
+GREEN_SCALE = [[0.0, "#E3EFE9"], [0.5, "#6FC79E"], [1.0, GREEN]]
+BRASS_GREEN = [[0.0, "#F0D9A8"], [0.5, "#7FC3A0"], [1.0, GREEN]]
 
 PLOTLY_TEMPLATE = go.layout.Template(layout=dict(
-    xaxis=dict(gridcolor=LINE, zerolinecolor="#D8C2AC", linecolor=INK, automargin=True,
-               tickfont=dict(family="Spectral, serif", size=12)),
-    yaxis=dict(gridcolor=LINE, zerolinecolor="#D8C2AC", linecolor=INK, automargin=True,
-               tickfont=dict(family="Spectral, serif", size=12)),
+    xaxis=dict(gridcolor=LINE, zerolinecolor="#D3DAE3", linecolor="#C9D1DC", automargin=True,
+               tickfont=dict(family="Inter, sans-serif", size=12, color=INK60)),
+    yaxis=dict(gridcolor=LINE, zerolinecolor="#D3DAE3", linecolor="#C9D1DC", automargin=True,
+               tickfont=dict(family="Inter, sans-serif", size=12, color=INK60)),
 ))
 
 def layout(**kw):
     base = dict(
-        plot_bgcolor=PAPER, paper_bgcolor=PAPER,
-        font=dict(color=INK, family="Spectral, serif", size=13),
-        colorway=[GREEN, BRASS, GREEN2, CRIMSON, "#8C8073", "#5C9A6F"],
+        plot_bgcolor=PAPER2, paper_bgcolor=PAPER2,
+        font=dict(color=INK, family="Inter, sans-serif", size=13),
+        colorway=[BRASS, GREEN, AMBER, CRIMSON, "#8A93A0", GREEN2],
         template=PLOTLY_TEMPLATE,
-        title=dict(font=dict(family="Fraunces, serif", size=16, color=INK)),
+        title=dict(font=dict(family="Manrope, sans-serif", size=15, color=INK)),
         margin=dict(l=10, r=10, t=20, b=10),
     )
     base.update(kw)
@@ -84,107 +85,107 @@ st.set_page_config(
 
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Spectral:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
-:root {{ --ink:{INK}; --paper:{PAPER}; --green:{GREEN}; --brass:{BRASS}; }}
+:root {{ --ink:{INK}; --paper:{PAPER}; --green:{GREEN}; --accent:{BRASS}; }}
 
-html, body, [class*="css"], .stMarkdown, p, li, span, div {{
-  font-family:'Spectral', Georgia, serif;
-}}
+html, body, [class*="css"], .stMarkdown, p, li, span, div {{ font-family:'Inter', system-ui, sans-serif; }}
 .stApp {{ background:{PAPER}; color:{INK}; }}
-.stApp *, [data-testid] * {{ border-radius:0 !important; }}
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] {{ display:none !important; }}
-.block-container {{ max-width:1180px; padding-top:2.6rem; padding-bottom:4rem; }}
+.block-container {{ max-width:1200px; padding-top:2.4rem; padding-bottom:4rem; }}
 
-/* tabular figures everywhere numbers matter */
 .num, .kpi .v, [data-testid="stMetricValue"] {{ font-variant-numeric:tabular-nums; }}
 
-h1 {{ font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.015em; line-height:1.02;
-  font-size:clamp(2.3rem,5vw,3.9rem); color:{INK}; margin:0.1rem 0 0.5rem 0; }}
-h2 {{ font-family:'Fraunces',serif; font-weight:600; font-size:1.7rem; color:{INK};
-  margin:0.3rem 0 0.7rem 0; }}
-h3 {{ font-family:'Fraunces',serif; font-weight:600; font-size:1.15rem; color:{INK}; }}
-h4 {{ font-family:'Spectral',serif; font-weight:600; text-transform:uppercase;
-  letter-spacing:0.14em; font-size:0.72rem; color:{INK60}; }}
+h1 {{ font-family:'Manrope',sans-serif; font-weight:800; letter-spacing:-0.03em; line-height:1.04;
+  font-size:clamp(2.2rem,4.6vw,3.4rem); color:{INK}; margin:0.2rem 0 0.5rem; }}
+h2 {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:1.6rem; color:{INK}; margin:0.3rem 0 0.7rem; }}
+h3 {{ font-family:'Manrope',sans-serif; font-weight:700; font-size:1.1rem; color:{INK}; }}
+h4 {{ font-family:'Inter',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.10em;
+  font-size:0.72rem; color:{INK60}; }}
 
 /* masthead */
-.masthead {{ display:flex; align-items:baseline; justify-content:space-between;
-  border-top:2px solid {INK}; border-bottom:2px solid {INK}; padding:0.4rem 0; margin-bottom:0.2rem; }}
-.masthead .brand {{ font-family:'Fraunces',serif; font-weight:700; letter-spacing:0.02em;
-  font-size:0.95rem; color:{INK}; }}
-.masthead .meta {{ font-family:'Spectral',serif; font-size:0.72rem; text-transform:uppercase;
-  letter-spacing:0.14em; color:{INK60}; }}
+.masthead {{ display:flex; align-items:center; justify-content:space-between; padding:0 0 1.2rem; }}
+.masthead .brand {{ font-family:'Manrope',sans-serif; font-weight:800; letter-spacing:-0.01em;
+  font-size:1.05rem; color:{INK}; display:flex; align-items:center; gap:.55rem; }}
+.masthead .brand::before {{ content:''; width:13px; height:13px; background:{BRASS}; border-radius:4px; }}
+.masthead .meta {{ font-size:0.76rem; color:{INK60}; font-weight:500; }}
 
-/* top nav */
+/* top nav · pill tabs */
 div[data-testid="stRadio"] > label {{ display:none; }}
 div[data-testid="stRadio"] [role="radiogroup"] {{
-  display:flex; gap:0; border-bottom:1px solid {INK}; margin-bottom:1.6rem; flex-wrap:wrap; }}
-div[data-testid="stRadio"] [role="radiogroup"] label {{ margin:0; padding:0.5rem 0; cursor:pointer; }}
+  display:flex; gap:.35rem; margin:0 0 1.8rem; flex-wrap:wrap;
+  background:{PAPER2}; padding:.35rem; border-radius:12px; border:1px solid {LINE};
+  box-shadow:0 1px 3px rgba(20,30,50,.05); width:fit-content; }}
+div[data-testid="stRadio"] [role="radiogroup"] label {{ margin:0; cursor:pointer; }}
 div[data-testid="stRadio"] [role="radiogroup"] label > div:first-child {{ display:none; }}
 div[data-testid="stRadio"] [role="radiogroup"] label > div:last-child p {{
-  font-family:'Fraunces',serif; font-weight:600; letter-spacing:0.02em; font-size:0.95rem;
-  color:{INK60}; padding:0 1.6rem 0 0; margin:0; }}
+  font-family:'Inter',sans-serif; font-weight:600; font-size:0.85rem; color:{INK60};
+  padding:.4rem 1.1rem; margin:0; border-radius:8px; }}
 div[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) > div:last-child p {{
-  color:{INK}; box-shadow:inset 0 -3px 0 0 {GREEN}; }}
+  color:#fff; background:{BRASS}; }}
 
-.lede {{ font-family:'Spectral',serif; font-size:1.16rem; line-height:1.6; color:{INK};
-  max-width:64ch; font-weight:400; }}
-.lede b {{ font-weight:600; color:{GREEN}; }}
-.lede i {{ color:{INK60}; }}
+.lede {{ font-size:1.12rem; line-height:1.6; color:#3A414C; max-width:64ch; font-weight:400; }}
+.lede b {{ font-weight:700; color:{GREEN}; }}
+.lede i {{ color:{INK60}; font-style:normal; }}
 
-/* KPI ledger rail */
-.kpis {{ display:grid; border:1px solid {INK}; border-right:none; margin:1.3rem 0; }}
-.kpi {{ border-right:1px solid {INK}; padding:0.9rem 1.05rem; }}
-.kpi .v {{ font-family:'Fraunces',serif; font-weight:600; font-size:1.95rem; line-height:1.05;
-  color:{INK}; }}
+/* KPI cards */
+.kpis {{ display:grid; gap:.9rem; margin:1.4rem 0; }}
+.kpi {{ background:{PAPER2}; border:1px solid {LINE}; border-radius:14px; padding:1.1rem 1.2rem;
+  box-shadow:0 1px 3px rgba(20,30,50,.06); }}
+.kpi .v {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:2.1rem; line-height:1.05;
+  color:{INK}; letter-spacing:-0.02em; }}
 .kpi .v.green {{ color:{GREEN}; }} .kpi .v.brass {{ color:{BRASS}; }}
-.kpi .k {{ font-family:'Spectral',serif; font-size:0.7rem; text-transform:uppercase;
-  letter-spacing:0.12em; color:{INK60}; margin-top:0.4rem; }}
-.kpi .s {{ font-family:'Spectral',serif; font-size:0.74rem; color:{INK60}; margin-top:0.15rem; }}
+.kpi .k {{ font-size:0.7rem; text-transform:uppercase; letter-spacing:0.07em; font-weight:600;
+  color:{INK60}; margin-top:0.5rem; }}
+.kpi .s {{ font-size:0.74rem; color:{INK60}; margin-top:0.2rem; }}
 
-/* method columns */
-.steps {{ display:grid; grid-template-columns:repeat(3,1fr); border:1px solid {INK};
-  border-right:none; margin-top:0.4rem; }}
-.step {{ border-right:1px solid {INK}; padding:1rem 1.1rem; }}
-.step .n {{ font-family:'Fraunces',serif; font-weight:700; font-size:1.6rem; color:{BRASS}; }}
-.step .t {{ font-family:'Fraunces',serif; font-weight:600; font-size:1.0rem; margin:0.2rem 0 0.5rem 0; }}
-.step .d {{ font-size:0.88rem; color:{INK60}; line-height:1.55; }}
+/* method cards */
+.steps {{ display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; margin-top:0.4rem; }}
+.step {{ background:{PAPER2}; border:1px solid {LINE}; border-radius:14px; padding:1.1rem 1.2rem;
+  box-shadow:0 1px 3px rgba(20,30,50,.06); }}
+.step .n {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:1.5rem; color:{BRASS}; }}
+.step .t {{ font-family:'Manrope',sans-serif; font-weight:700; font-size:1.02rem; margin:0.2rem 0 0.5rem; }}
+.step .d {{ font-size:0.88rem; color:{INK60}; line-height:1.6; }}
 .step .d b {{ color:{INK}; font-weight:600; }}
 
 /* segment cards */
-.segcard {{ border:1px solid {INK}; border-left-width:5px; padding:0.7rem 0.9rem; margin-bottom:0.6rem;
-  background:{PAPER}; }}
-.segcard .nm {{ font-family:'Fraunces',serif; font-weight:600; font-size:1.0rem; }}
-.segcard .ct {{ font-family:'Fraunces',serif; font-weight:600; font-size:1.5rem; }}
-.segcard .mt {{ font-family:'Spectral',serif; font-size:0.76rem; color:{INK60}; }}
+.segcard {{ background:{PAPER2}; border:1px solid {LINE}; border-left:5px solid {INK};
+  border-radius:12px; padding:0.8rem 1rem; margin-bottom:0.6rem; box-shadow:0 1px 3px rgba(20,30,50,.06); }}
+.segcard .nm {{ font-family:'Manrope',sans-serif; font-weight:700; font-size:0.98rem; }}
+.segcard .ct {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:1.5rem; }}
+.segcard .mt {{ font-size:0.78rem; color:{INK60}; }}
 
 /* blocks + callout */
-.blk {{ border:1px solid {INK}; padding:1rem 1.1rem; background:{PAPER}; }}
-.blk.fill {{ background:{PAPER2}; }}
-.callout {{ border-left:3px solid {BRASS}; padding:0.6rem 0.95rem; margin:0.9rem 0;
-  font-size:0.95rem; background:{PAPER2}; }}
+.blk {{ background:{PAPER2}; border:1px solid {LINE}; border-radius:12px; padding:1rem 1.2rem;
+  box-shadow:0 1px 3px rgba(20,30,50,.06); }}
+.blk.fill {{ background:{PAPER}; box-shadow:none; }}
+.callout {{ border-left:4px solid {BRASS}; background:{PAPER2}; border-radius:0 10px 10px 0;
+  padding:0.7rem 1rem; margin:0.9rem 0; font-size:0.94rem; color:#3A414C;
+  box-shadow:0 1px 3px rgba(20,30,50,.05); }}
 .callout.green {{ border-left-color:{GREEN}; }}
 .callout.loss {{ border-left-color:{CRIMSON}; }}
 
-.find {{ font-size:1.0rem; line-height:1.65; }}
-.find b {{ font-weight:600; color:{GREEN}; }}
+.find {{ font-size:1.0rem; line-height:1.7; color:#3A414C; }}
+.find b {{ font-weight:700; color:{GREEN}; }}
 
 /* buttons */
 .stButton > button, .stFormSubmitButton > button {{
-  border:1px solid {GREEN}; background:{GREEN}; color:{PAPER};
-  font-family:'Fraunces',serif; font-weight:600; letter-spacing:0.02em; font-size:0.95rem;
-  padding:0.5rem 1.4rem; }}
-.stButton > button:hover, .stFormSubmitButton > button:hover {{
-  background:{INK}; border-color:{INK}; color:{PAPER}; }}
+  border:none; background:{BRASS}; color:#fff; border-radius:10px;
+  font-family:'Inter',sans-serif; font-weight:700; font-size:0.9rem; padding:0.6rem 1.5rem;
+  box-shadow:0 2px 6px rgba(47,107,224,.30); }}
+.stButton > button:hover, .stFormSubmitButton > button:hover {{ background:#2456B8; }}
 
 hr {{ border:none; border-top:1px solid {LINE}; margin:1.6rem 0; }}
-[data-testid="stDataFrame"] {{ border:1px solid {INK}; }}
-[data-testid="stMetricValue"] {{ font-family:'Fraunces',serif; }}
+[data-testid="stDataFrame"] {{ border:1px solid {LINE}; border-radius:10px; overflow:hidden; }}
+[data-testid="stPlotlyChart"] {{ background:{PAPER2}; border:1px solid {LINE}; border-radius:14px;
+  padding:10px 12px; box-shadow:0 1px 3px rgba(20,30,50,.06); }}
+[data-testid="stMetricValue"] {{ font-family:'Manrope',sans-serif; }}
 
 textarea, input, .stNumberInput div[data-baseweb="input"],
 .stSelectbox div[data-baseweb="select"] > div {{
-  border:1px solid {INK} !important; background:{PAPER} !important; color:{INK} !important; }}
-.stSlider [data-baseweb="slider"] div[role="slider"] {{ background:{GREEN} !important; }}
+  border:1px solid {LINE} !important; background:{PAPER2} !important; color:{INK} !important;
+  border-radius:8px; }}
+.stSlider [data-baseweb="slider"] div[role="slider"] {{ background:{BRASS} !important; }}
 ::placeholder {{ color:{INK60} !important; }}
 </style>
 """, unsafe_allow_html=True)
@@ -196,7 +197,7 @@ textarea, input, .stNumberInput div[data-baseweb="input"],
 def masthead(meta):
     st.markdown(
         f"""<div class="masthead">
-        <span class="brand">The Customer Ledger</span>
+        <span class="brand">Customer Lifetime Value</span>
         <span class="meta">BG/NBD + Gamma-Gamma · {meta['n_customers_rfm']:,} customers ·
         £{meta['total_clv_12m']:,.0f} CLV / 12m</span></div>""",
         unsafe_allow_html=True)
@@ -204,11 +205,13 @@ def masthead(meta):
 
 def rule(left, right=""):
     st.markdown(
-        f"""<div style="display:flex; align-items:baseline; justify-content:space-between;
-        border-top:1px solid {INK}; padding-top:0.45rem; margin:2.1rem 0 1rem 0;">
-        <span style="font-family:'Fraunces',serif; font-weight:600; font-size:1.35rem;">{left}</span>
-        <span style="font-family:'Spectral',serif; font-size:0.72rem; text-transform:uppercase;
-        letter-spacing:0.12em; color:{INK60};">{right}</span></div>""",
+        f"""<div style="display:flex; align-items:center; justify-content:space-between;
+        margin:2.2rem 0 1rem 0;">
+        <span style="font-family:'Manrope',sans-serif; font-weight:800; font-size:1.4rem;
+        letter-spacing:-0.02em; display:flex; align-items:center; gap:.55rem;">
+        <span style="width:5px; height:1.1em; background:{BRASS}; border-radius:3px;"></span>{left}</span>
+        <span style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;
+        font-weight:600; color:{INK60};">{right}</span></div>""",
         unsafe_allow_html=True)
 
 
