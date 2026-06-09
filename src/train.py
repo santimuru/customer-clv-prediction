@@ -1,5 +1,5 @@
 """
-train.py — Trains a Customer Lifetime Value (CLV) prediction model.
+train.py · Trains a Customer Lifetime Value (CLV) prediction model.
 
 Pipeline:
   1. Downloads the UCI Online Retail dataset (~23MB Excel)
@@ -199,7 +199,7 @@ def train_rf_baseline(rfm: pd.DataFrame, clv_12m: pd.Series):
 
     mae = mean_absolute_error(y_test, y_pred)
     r2  = r2_score(y_test, y_pred)
-    print(f"    RF Baseline — MAE: £{mae:.2f}  R2: {r2:.4f}")
+    print(f"    RF Baseline · MAE: £{mae:.2f}  R2: {r2:.4f}")
     return pipe, {"mae": round(mae, 2), "r2": round(r2, 4)}
 
 
@@ -272,7 +272,7 @@ def main():
     # 9. Save
     os.makedirs(os.path.dirname(META_PATH), exist_ok=True)
     # lifetimes models can't be pickled (contain internal lambdas)
-    # — save fitted params instead and reconstruct on load
+    # · save fitted params instead and reconstruct on load
     joblib.dump(rf_model, MODEL_RF)
 
     segment_stats = (
@@ -304,7 +304,7 @@ def main():
         "total_clv_12m": round(rfm["clv_12m"].sum(), 2),
         "median_clv_12m": round(rfm["clv_12m"].median(), 2),
         "avg_p_alive": round(rfm["p_alive"].mean(), 4),
-        # lifetimes model params (serialized as plain dicts — models reconstructed on load)
+        # lifetimes model params (serialized as plain dicts · models reconstructed on load)
         "bgf_params": dict(bgf.params_),
         "gg_params":  dict(gg.params_),
     }

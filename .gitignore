@@ -34,3 +34,7 @@ Thumbs.db
 .env
 *.env
 secrets.toml
+
+# QA artifacts
+_qa/
+_qa_run.log
