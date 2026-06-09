@@ -15,12 +15,12 @@ Built on the **BG/NBD + Gamma-Gamma** probabilistic framework · a principled ap
 
 ## Live Dashboard
 
-| Section   | What you'll find                                                              |
-| --------- | ----------------------------------------------------------------------------- |
-| Ledger    | The brief, headline KPIs, monthly revenue, top markets, cohort retention      |
-| Segments  | 8-tier RFM segmentation, headcount vs value, treemap of CLV potential         |
-| Forecast  | 6m/12m projections, CLV distribution, P(alive) vs value, ML baseline          |
-| Simulator | Enter any customer's history to get CLV + segment + recommended play          |
+| Section   | What you'll find                                                         |
+| --------- | ------------------------------------------------------------------------ |
+| Ledger    | The brief, headline KPIs, monthly revenue, top markets, cohort retention |
+| Segments  | 8-tier RFM segmentation, headcount vs value, treemap of CLV potential    |
+| Forecast  | 6m/12m projections, CLV distribution, P(alive) vs value, ML baseline     |
+| Simulator | Enter any customer's history to get CLV + segment + recommended play     |
 
 ---
 
