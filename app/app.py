@@ -132,7 +132,7 @@ div[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) > div:la
 .kpis {{ display:grid; gap:.9rem; margin:1.4rem 0; }}
 .kpi {{ background:{PAPER2}; border:1px solid {LINE}; border-radius:14px; padding:1.1rem 1.2rem;
   box-shadow:0 1px 3px rgba(20,30,50,.06); }}
-.kpi .v {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:2.1rem; line-height:1.05;
+.kpi .v {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:clamp(1.4rem,6vw,2.1rem); line-height:1.05;
   color:{INK}; letter-spacing:-0.02em; }}
 .kpi .v.green {{ color:{GREEN}; }} .kpi .v.brass {{ color:{BRASS}; }}
 .kpi .k {{ font-size:0.7rem; text-transform:uppercase; letter-spacing:0.07em; font-weight:600;
@@ -152,7 +152,7 @@ div[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) > div:la
 .segcard {{ background:{PAPER2}; border:1px solid {LINE}; border-left:5px solid {INK};
   border-radius:12px; padding:0.8rem 1rem; margin-bottom:0.6rem; box-shadow:0 1px 3px rgba(20,30,50,.06); }}
 .segcard .nm {{ font-family:'Manrope',sans-serif; font-weight:700; font-size:0.98rem; }}
-.segcard .ct {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:1.5rem; }}
+.segcard .ct {{ font-family:'Manrope',sans-serif; font-weight:800; font-size:clamp(1.2rem,5vw,1.5rem); }}
 .segcard .mt {{ font-size:0.78rem; color:{INK60}; }}
 
 /* blocks + callout */
@@ -187,6 +187,18 @@ textarea, input, .stNumberInput div[data-baseweb="input"],
   border-radius:8px; }}
 .stSlider [data-baseweb="slider"] div[role="slider"] {{ background:{BRASS} !important; }}
 ::placeholder {{ color:{INK60} !important; }}
+
+/* ===== Mobile responsive ===== */
+@media (max-width: 640px){{
+  [data-testid="stHorizontalBlock"]{{ flex-direction:column !important; gap:.75rem !important; }}
+  [data-testid="stHorizontalBlock"] > [data-testid="column"],
+  [data-testid="stColumn"]{{ width:100% !important; flex:1 1 100% !important; min-width:0 !important; }}
+  .kpis,.steps{{ grid-template-columns:1fr !important; gap:.75rem !important; }}
+  .block-container{{ padding-left:1rem !important; padding-right:1rem !important; }}
+}}
+@media (min-width:641px) and (max-width:960px){{
+  .kpis,.steps{{ grid-template-columns:repeat(2,1fr) !important; }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
